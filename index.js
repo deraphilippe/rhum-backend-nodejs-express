@@ -23,11 +23,12 @@ const app = express()
 app.use(cors({ origin : "*" }))
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
+/**
 app.use((req, res, next) => {
     const delay = 2000
     setTimeout(next, delay)
 })
+     */
 
 app.use("/api", AuthRouter)
 app.use("/api", ProduitRouter)
@@ -44,9 +45,11 @@ app.use("/", (req, res) => {
     res.send("Welcome ! You're now connected in the network.")
 })
 
+/**
 const host = "192.168.43.244"
-//const host = "0.0.0.0"
+const host = "0.0.0.0"
+ */
 
-app.listen(port, host, () => {
+app.listen(port, () => {
     console.log(`server is running in port ${port} `)
 })
