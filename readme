@@ -1,0 +1,9 @@
+#Cette application utilise ExpressJS, PostgreSQL comme base de données et Prisma comme ORM
+#Les schemas des tables se trouve dans /prisma/schema.prisma
+
+#Pour lancer la migration de données
+npx prisma generate
+npx prisma migrate dev --name <migation_name>
+
+#Pour lancer l'application
+npm start

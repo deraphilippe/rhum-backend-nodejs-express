@@ -1,0 +1,131 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_LOCAL_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model checkpoint {
+    id        Int      @id @default(autoincrement())
+    name      String
+    stock     stock[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      users[]
+}
+
+model users {
+    id              Int               @id @default(autoincrement())
+    name            String
+    phone           String            @unique
+    password        String
+    usertype        String
+    synchronisation synchronisation[]
+    checkpointId    Int
+    checkpoint      checkpoint        @relation(fields: [checkpointId], references: [id])
+    commande        commande[]
+    sortie          sortie[]
+    entre           entre[]
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
+}
+
+model produit {
+    id          Int      @id @default(autoincrement())
+    designation String
+    prixNorm    Int
+    prixGros    Int
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    stock       stock[]
+    sortie      sortie[]
+    entre       entre[]
+}
+
+model stock {
+    id           Int        @id @default(autoincrement())
+    produitId    Int
+    produit      produit    @relation(fields: [produitId], references: [id])
+    checkpointId Int
+    checkpoint   checkpoint @relation(fields: [checkpointId], references: [id])
+    value        Int
+    createdAt    DateTime   @default(now())
+    updatedAt    DateTime   @updatedAt
+}
+
+model client {
+    id        String     @id
+    nom       String
+    phone     String?
+    userId    Int
+    commande  commande[]
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+}
+
+model commande {
+    id        String    @id
+    paiement  Int?
+    dateLiv   DateTime?
+    montant   Int?
+    clientId  String
+    aborted   Boolean?
+    client    client    @relation(fields: [clientId], references: [id])
+    userId    Int
+    user      users     @relation(fields: [userId], references: [id])
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    sortie    sortie[]
+    payment   payment[]
+}
+
+model sortie {
+    id         String    @id
+    quantite   Int
+    apply      Int
+    typePrix   String
+    produitId  Int
+    commandeId String?
+    userId     Int
+    aborted    Boolean?
+    user       users     @relation(fields: [userId], references: [id])
+    commande   commande? @relation(fields: [commandeId], references: [id])
+    produit    produit   @relation(fields: [produitId], references: [id])
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime  @updatedAt
+}
+
+model entre {
+    id        String   @id
+    produitId Int
+    produit   produit  @relation(fields: [produitId], references: [id])
+    quantite  Int
+    userId    Int
+    aborted   Boolean?
+    user      users    @relation(fields: [userId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model payment {
+    id         String   @id
+    commandeId String
+    commande   commande @relation(fields: [commandeId], references: [id])
+    montant    Int
+    userId     Int
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+}
+
+model synchronisation {
+    id        Int      @id @default(autoincrement())
+    value     String
+    tableName String
+    typeSync  String
+    userId    Int
+    user      users    @relation(fields: [userId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
